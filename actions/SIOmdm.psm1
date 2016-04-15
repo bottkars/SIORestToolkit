@@ -21,15 +21,13 @@
         Get-SIOWebException -ExceptionMessage $_.Exception.Message
         break
         }
-    Write-Host -ForegroundColor White "Switched Successfully to $SlaveMmdId, waiting for Gateway to Update Configuration"
-    do {sleep 1;Write-Verbose "Waiting for Gateway to Respond new Master MDM";($NewState = Get-SIOmdmCluster -ErrorAction SilentlyContinue).master} until ($NewState)
+    Write-Host -ForegroundColor White "mdm successfully to $SlaveMmdId, waiting for on configuration update"
+    do 
+        {
+        sleep 1
+        Write-Verbose "Waiting for Gateway to Respond new Master MDM"
+        ($NewState = Get-SIOmdmCluster -ErrorAction SilentlyContinue).master
+        } 
+    until ($NewState)
 }
 
-
-
-<#
-/api/instances
-/System/actio
-n/changeMdm
-Ownership
-#>
