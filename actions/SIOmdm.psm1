@@ -21,7 +21,7 @@
         Get-SIOWebException -ExceptionMessage $_.Exception.Message
         break
         }
-    Write-Host -ForegroundColor White "mdm successfully to $SlaveMmdId, waiting for on configuration update"
+    Write-Host -ForegroundColor White "mdm successfully to $SlaveMmdId, waiting for Gateway on configuration update"
     do 
         {
         sleep 1
