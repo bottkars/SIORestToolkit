@@ -25,10 +25,56 @@ isInitialLicense          : True
 defaultIsVolumeObfuscated : False
 restrictedSdcModeEnabled  : False
 ```
-The command will create a Auth Token with the ScaleIO Gateway and stores that as a Global Authenticationblock for the current PSSession
-The System will Report the Gateway version and System Cofiguration at first.
+The command will create a Auth Token with the ScaleIO Gateway and stores that as a Global Authenticationblock for the current PSSession   
+The System will Report the Gateway version and System Cofiguration at first.  
+# Commands
 To get a List of currently awailable commands, type
 ```Powershell
 Get-Command -Module SIORestToolkit
 ```
+#Examples
+TO create a new Volume, use the New-SIOVolume command. It requires a StoragePoolID as Input Parameter  
+To get a Storage Pool ID use the Get-SIOStoragePoolList command
+```Powershell
+(Get-SIOstoragePoolList | where storagePoolName -match "geek").storagePoolId
+```
+This example will retrieve the Pool ID for the Pool that matches the Name "geek"   
+to create a new Volume in the Pool, use
+```Powershell
+New-SIOVolume -storagePoolID (Get-SIOstoragePoolList | where storagePoolName -match "geek").storagePoolId
+````
+or 
+```Powershell
+New-SIOVolume -storagePoolID [storagePoolid]
+```
 
+using -verbose switch will display the Json Body of the Request    
+```Powershell
+New-SIOVolume -storagePoolID (Get-SIOstoragePoolList | where storagePoolName -match "geek").storagePoolId -Verbose
+VERBOSE: {
+    "volumeSizeInKb":  "4194304",
+    "storagePoolId":  "76733fa700000000",
+    "name":  null,
+    "volumeType":  "ThickProvisioned"
+}
+VERBOSE: POST https://192.168.2.193/api/types/Volume/instances with -1-byte payload
+VERBOSE: received -1-byte response of content type application/json;charset=UTF-8
+VERBOSE: GET https://192.168.2.193/api/instances/Volume::c10bdced00000008 with 0-byte payload
+VERBOSE: received -1-byte response of content type application/json;charset=UTF-8
+
+
+VolumeName              :
+VolumeID                : c10bdced00000008
+creationTime            : 1460714992
+isObfuscated            : False
+volumeType              : ThickProvisioned
+consistencyGroupId      :
+vtreeId                 : 1f12c57100000008
+ancestorVolumeId        :
+useRmcache              : True
+sizeInKb                : 8388608
+storagePoolId           : 76733fa700000000
+mappedSdcInfo           :
+mappingToAllSdcsEnabled : False
+
+```
