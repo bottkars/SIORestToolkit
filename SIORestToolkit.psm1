@@ -299,4 +299,45 @@ function Get-SIOStoragePools
     }
 }
 
-
+<#
+.Synopsis
+   Short description
+.DESCRIPTION
+   Long description
+.EXAMPLE
+   Example of how to use this cmdlet
+.EXAMPLE
+   Another example of how to use this cmdlet
+.INPUTS
+   Inputs to this cmdlet (if any)
+.OUTPUTS
+   Output from this cmdlet (if any)
+.NOTES
+   General notes
+.COMPONENT
+   The component this cmdlet belongs to
+.ROLE
+   The role this cmdlet belongs to
+.FUNCTIONALITY
+   The functionality that best describes this cmdlet
+#>
+function Get-SIOyesno
+{
+    [CmdletBinding(DefaultParameterSetName='Parameter Set 1', 
+                  SupportsShouldProcess=$true, 
+                  PositionalBinding=$false,
+                  HelpUri = 'http://labbuildr.com/',
+                  ConfirmImpact='Medium')]
+    Param
+    (
+$title = "Delete Files",
+$message = "Do you want to delete the remaining files in the folder?",
+$Yestext = "Yestext",
+$Notext = "notext"
+    )
+$yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes","$Yestext"
+$no = New-Object System.Management.Automation.Host.ChoiceDescription "&No","$Notext"
+$options = [System.Management.Automation.Host.ChoiceDescription[]]($no, $yes)
+$result = $host.ui.PromptForChoice($title, $message, $options, 0)
+return ($result)
+}

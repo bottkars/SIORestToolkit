@@ -120,4 +120,82 @@ function Remove-SIOmappedSDC
     {
     }
 }
+<#
+/api/instances/Volume::{id}/action/removeVolume
+POST Required:
+removeMode –
+"ONLY_ME"
+or
+"INCLUDING_DESCE
+NDANTS"
+or
+"DESCENDANTS_O
+NLY"
+or
+"WHOLE_VTREE"
+#>
+function Remove-SIOVolume
+{
+    [CmdletBinding(DefaultParameterSetName='1', 
+                  SupportsShouldProcess=$true, 
+                  PositionalBinding=$false,
+                  HelpUri = 'https://github.com/bottkars/SIORestToolkit',
+                  ConfirmImpact='Medium')]
+    Param
+    (
+    # Specify the SIO Volume
+        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,Position = 1)]
+        [Alias("VID")]
+        [ValidatePattern("[0-9A-F]{16}")]$VolumeID,
+    # Specify the SDC ID 
+        [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true)]
+        [Alias("RMODE")]
+        [ValidateSet("ONLY_ME","INCLUDING_DESCENDANTS","DESCENDANTS_ONLY","WHOLE_VTREE")]$removeMode = "ONLY_ME"
+    )
+    Begin
+    {
+    }
+    Process
+    {
+    if ($ConfirmPreference -match "none")
+        { 
+        $commit = 1 
+        }
+    else
+        {
+        $commit = Get-SIOyesno -title "Commit Volume Deletion" -message "This will delete Volume $VolumeID"
+        }
+    Switch ($commit)
+        {
+            1
+            {
+            $Body = @{  
+                removeMode = $removeMode
+                }    
+            $JSonBody = ConvertTo-Json $Body
+            Write-Verbose $JSonBody
+            try
+                {
+                $RemoveVolume = Invoke-RestMethod -Uri "$SIObaseurl/api/instances/Volume::$VolumeID/action/removeVolume" -Headers $ScaleIOAuthHeaders -Method Post -Body $JSonBody
+                }
+            catch
+                {
+                $_.Exception.Message
+                break
+                }
+            Write-Host -ForegroundColor White "VOlume $VolumeID Removed"
+            }
+            0
+            {
+            Write-Warning "Volume Deletion refused by user for Volume $VolumeID"
+            }      
+        }
+
+    }
+    End
+    {
+    }
+}
+
+
 
