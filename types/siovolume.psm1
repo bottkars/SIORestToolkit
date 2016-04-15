@@ -28,13 +28,13 @@ function New-SIOVolume
 
         [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,ParameterSetName='1')]
         [Alias("SPID")]
-        [validateLength(16,16)][ValidatePattern("[0-9A-F]{16}")]$PoolID,
+        [ValidatePattern("[0-9A-F]{16}")]$storagePoolID,
     # Specify the New Volume Name  
         [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$false)][Alias("VN")]$VolumeName,
     # Specify if thin, default thick  
         [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$false)][switch]$Thin,
     # Specify the New Volume Size in GB 
-        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$false)][ValidateRange(1,64000)][int]$SizeInGB
+        [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$false)][ValidateRange(1,64000)][int]$SizeInGB = 4
     )
     Begin
     {
@@ -53,11 +53,12 @@ function New-SIOVolume
 
     $Body = @{  
      name = $VolumeName
-     storagePoolId = $PoolID
-     volumeSizeInKb = ($SizeInGB*1024).ToString()
+     storagePoolId = $storagePoolID
+     volumeSizeInKb = ($SizeInGB*1024*1024).ToString()
      volumeType = $VolumeType
     }  
     $JSonBody = ConvertTo-Json $Body
+    Write-Verbose $JSonBody
     try
         {
         $NewVolume = Invoke-RestMethod -Uri "$SIObaseurl/api/types/Volume/instances" -Headers $ScaleIOAuthHeaders -Method Post -Body $JSonBody
