@@ -353,6 +353,7 @@ function Get-SIOUser
     Param
     (
     [Parameter(Mandatory = $false,ValueFromPipelineByPropertyName=$true,ParameterSetName='0')]
+    [switch]$all=$true,
     [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,ParameterSetName='6')]
     [ValidatePattern("[0-9A-F]{16}")][String[]]$UserID,
     [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,ParameterSetName='1',Position = 1)]
