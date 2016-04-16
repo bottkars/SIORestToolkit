@@ -108,7 +108,15 @@ function Get-SIOmdmCluster
     }
     Process
     {
-    (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).System.mdmcluster
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).System.mdmcluster
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
     }
     End
     {
@@ -135,20 +143,28 @@ function Get-SIOSystem
 
     Begin
     {
+    $Myself = $MyInvocation.MyCommand.Name.Substring(7)
+    $Excludeproperties = ('links','name','id',
+    'performanceParameters',
+    'currentProfilePerformanceParameters',
+    'sdcMdmNetworkDisconnectionsCounterParameters',
+    'sdcSdsNetworkDisconnectionsCounterParameters',
+    'sdcMemoryAllocationFailuresCounterParameters',
+    'sdcSocketAllocationFailuresCounterParameters',
+    'sdcLongOperationsCounterParameters')
     }
     Process
     {
-    (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).System | Select-Object @{N="Systemid";E={$_.id}},
-    @{N="SystemName";E={$_.name}},
-    systemVersionName,
-    installIdswid,
-    daysInstalled, 
-    maxCapacityInGb,
-    capacityTimeLeftInDays,
-    enterpriseFeaturesEnabled,
-    isInitialLicense,
-    defaultIsVolumeObfuscated,
-    restrictedSdcModeEnabled
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).System | Select-Object -ExcludeProperty $Excludeproperties -Property @{N="$($Myself)Name";E={$_.name}},
+        @{N="$($Myself)ID";E={$_.id}},* #-ExpandProperty mdmCluster
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
     }
     End
     {
@@ -187,6 +203,15 @@ function Get-SIOAPIversion
     }
     Process
     {
+    try
+        {
+
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
     (Invoke-RestMethod -Uri "$SIObaseurl/api/version" -Headers $ScaleIOAuthHeaders -Method Get)
     }
     End
@@ -196,108 +221,414 @@ function Get-SIOAPIversion
 }
 
 
-function Get-SIOSDC
+<## from (Invoke-RestMethod -Uri "$SIOBaseUrl/api/instances" -Headers $global:ScaleIOAuthHeaders -Method Get).System.links
+rel                                                                                      href                                                                                    
+---                                                                                      ----                                                                                    
+self                                                                                     /api/instances/System::511ed7166c39d314                                                 
+/api/System/relationship/Statistics                                                      /api/instances/System::511ed7166c39d314/relationships/Statistics                        
+/api/System/relationship/ProtectionDomain                                                /api/instances/System::511ed7166c39d314/relationships/ProtectionDomain                  
+/api/System/relationship/Sdc                                                             /api/instances/System::511ed7166c39d314/relationships/Sdc                               
+/api/System/relationship/User                                                            /api/instances/System::511ed7166c39d314/relationships/User
+
+#>
+function Get-SIOStatistics
 {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName='2'
+    )]
     Param
     (
-    [Parameter(Mandatory = $true)]$SystemID
+    [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,ParameterSetName='1')]
+    [ValidatePattern("[0-9A-F]{16}")][String[]]$SystemID,
+    [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,ParameterSetName='2')]
+    [ValidatePattern("[0-9A-F]{16}")][String[]]$ProtectionDomainID,
+    [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,ParameterSetName='3')]
+    [ValidatePattern("[0-9A-F]{16}")][String[]]$VolumeID
     )
     Begin
     {
+    $Myself = $MyInvocation.MyCommand.Name.Substring(7)
     }
     Process
     {
-    (Invoke-RestMethod -Uri "$SIObaseurl/api/instances/System::$SystemID/relationships/Sdc" -Headers $ScaleIOAuthHeaders -Method Get) | Select-Object @{N="SDCid";E={$_.id}},
-    @{N="SDCName";E={$_.name}},
-    onVmWare,
-    systemId,
-    mdmConnectionState,
-    perfParams,
-    currProfilePerfParams,
-    memoryAllocationFailure,
-    socketAllocationFailure,
-    sdcGuid,
-    sdcIp,
-    sdcApproved,
-    versionInfo
+    switch ($PsCmdlet.ParameterSetName)
+        {
+        "1"
+            {
+            $Instance = "System"
+            $InstanceID = $SystemID 
+            }
+
+        "2"
+            {
+            $Instance = "ProtectionDomain"
+            $InstanceID = $ProtectionDomainID
+            }
+        "3"
+            {
+            $Instance = "Volume"
+            $InstanceID = $VolumeID
+            }
+
+        }
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances/$Instance::$InstanceID/relationships/$Myself" -Headers $ScaleIOAuthHeaders -Method Get) | Select-Object  -ExcludeProperty links,name,id -Property @{N="$($Myself)Name";E={$_.name}},
+        @{N="$($Myself)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
     }
     End
     {
 
     }
 }
-
 function Get-SIOProtectionDomain
 {
     [CmdletBinding()]
     [OutputType([int])]
     Param
     (
-    [Parameter(Mandatory = $true)]$SystemID
+    [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,Position = 1)]$SystemID
     )
     Begin
     {
+    $Myself = $MyInvocation.MyCommand.Name.Substring(7)
+    $Excludeproperties = ('links','name','id')
     }
     Process
     {
-    (Invoke-RestMethod -Uri "$SIObaseurl/api/instances/System::$SystemID/relationships/ProtectionDomain" -Headers $ScaleIOAuthHeaders -Method Get) | Select-Object @{N="ProtectionDomainid";E={$_.id}},
-    @{N="ProtectionDomainName";E={$_.name}},
-    systemId,
-    rebuildNetworkThrottlingInKbps,
-    rebalanceNetworkThrottlingInKbps,
-    overallIoNetworkThrottlingInKbps,
-    sdsConfigurationFailureCounterParameters,
-    mdmSdsNetworkDisconnectionsCounterParameters,
-    sdsSdsNetworkDisconnectionsCounterParameters,
-    sdsReceiveBufferAllocationFailuresCounterParameters,
-    overallIoNetworkThrottlingEnabled,
-    rebuildNetworkThrottlingEnabled,
-    rebalanceNetworkThrottlingEnabled,
-    protectionDomainState,
-    sdsDecoupledCounterParameters
-    
-
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances/System::$SystemID/relationships/$Myself" -Headers $ScaleIOAuthHeaders -Method Get) | Select-Object  -ExcludeProperty $Excludeproperties -Property @{N="$($Myself)Name";E={$_.name}},
+        @{N="$($Myself)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
     }
     End
     {
 
     }
 }
-
-
-function Get-SIOStoragePools
+function Get-SIOSdc
 {
     [CmdletBinding()]
     [OutputType([int])]
     Param
     (
-    [Parameter(Mandatory = $true)]$SystemID
+    [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,Position = 1)]$SystemID
     )
     Begin
     {
+    $Myself = $MyInvocation.MyCommand.Name.Substring(7)
     }
     Process
     {
-    (Invoke-RestMethod -Uri "$SIObaseurl/api/instances/System::$SystemID/relationships/storagePoolList" -Headers $ScaleIOAuthHeaders -Method Get) <#| Select-Object @{N="SDCid";E={$_.id}},
-    @{N="SDCName";E={$_.name}},
-    onVmWare,
-    systemId,
-    mdmConnectionState,
-    perfParams,
-    currProfilePerfParams,
-    memoryAllocationFailure,
-    socketAllocationFailure,
-    sdcGuid,
-    sdcIp,
-    sdcApproved,
-    versionInfo#>
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances/System::$SystemID/relationships/$Myself" -Headers $ScaleIOAuthHeaders -Method Get) | Select-Object  -ExcludeProperty links,name,id -Property @{N="$($Myself)Name";E={$_.name}},
+        @{N="$($Myself)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
     }
     End
     {
 
     }
 }
+function Get-SIOUser
+{
+    [CmdletBinding(DefaultParameterSetName = '0')]
+    Param
+    (
+    [Parameter(Mandatory = $false,ValueFromPipelineByPropertyName=$true,ParameterSetName='0')]
+    [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,ParameterSetName='6')]
+    [ValidatePattern("[0-9A-F]{16}")][String[]]$UserID,
+    [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,ParameterSetName='1',Position = 1)]
+    [ValidatePattern("[0-9A-F]{16}")][String[]]$SystemID
+    )
+    Begin
+    {
+    $Myself = $MyInvocation.MyCommand.Name.Substring(7)
+    $Excludeproperties = ('links','name','id')
+    }
+    Process
+    {
+        switch ($PsCmdlet.ParameterSetName)
+        {
+        "0"
+            {
+            $Instance = "User"
+            $Uri = "$SIObaseurl/api/types/$Instance/instances"
+            }
+
+        "1"
+            {
+            $Instance = "System"
+            $InstanceID = $SystemID
+            $Relationship = '/relationships/User'
+            $Uri = "$SIObaseurl/api/instances/$Instance::$InstanceID$Relationship"
+            }
+        "2"
+            {
+            $Instance = "ProtectionDomain"
+            $InstanceID = $ProtectionDomainID
+            }
+        "3"
+            {
+            $Instance = "Volume"
+            $InstanceID = $VolumeID
+            }
+        "4"
+            {
+            $Instance = "StoragePool"
+            $InstanceID = $StoragePoolID
+            }
+        "5"
+            {
+            $Instance = "VTree"
+            $InstanceID = $VTreeID
+            }
+        "6"
+            {
+            $Instance = "User"
+            $InstanceID = $UserID
+            $Relationship = ""
+            $Uri = "$SIObaseurl/api/instances/$Instance::$InstanceID$Relationship"
+            }
+        }
+    try
+        {
+        (Invoke-RestMethod -Uri $Uri -Headers $ScaleIOAuthHeaders -Method Get) | Select-Object  -ExcludeProperty $Excludeproperties -Property @{N="$($Myself)Name";E={$_.name}},
+        @{N="$($Myself)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
+    }
+    <#
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances/System::$SystemID/relationships/$Myself" -Headers $ScaleIOAuthHeaders -Method Get) | Select-Object  -ExcludeProperty links,name,id -Property @{N="$($Myself)Name";E={$_.name}},
+        @{N="$($Myself)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+    #>
+    End
+    {
+
+    }
+}
+<#
+PS E:\GitHub> (Invoke-RestMethod -Uri "$SIOBaseUrl/api/types/ProtectionDomain/instances" -Headers $global:ScaleIOAuthHeaders -Method Get).links
+
+
+rel                                                                                     href                                                                                   
+---                                                                                     ----                                                                                   
+self                                                                                    /api/instances/ProtectionDomain::f744ff1900000000                                      
+/api/ProtectionDomain/relationship/Statistics                                           /api/instances/ProtectionDomain::f744ff1900000000/relationships/Statistics             
+/api/ProtectionDomain/relationship/StoragePool                                          /api/instances/ProtectionDomain::f744ff1900000000/relationships/StoragePool            
+/api/ProtectionDomain/relationship/Sds                                                  /api/instances/ProtectionDomain::f744ff1900000000/relationships/Sds                    
+/api/ProtectionDomain/relationship/FaultSet                                             /api/instances/ProtectionDomain::f744ff1900000000/relationships/FaultSet               
+/api/parent/relationship/systemId                                                       /api/instances/System::511ed7166c39d314                                                
+#>
+
+function Get-SIOStoragePool
+{
+    [CmdletBinding()]
+    [OutputType([int])]
+    Param
+    (
+    [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,Position = 1)]$ProtectionDomainID
+    )
+    Begin
+    {
+    $Myself = $MyInvocation.MyCommand.Name.Substring(7)
+    $Instance = "ProtectionDomain"
+    }
+    Process
+    {
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances/$Instance::$ProtectionDomainID/relationships/$Myself" -Headers $ScaleIOAuthHeaders -Method Get) | Select-Object  -ExcludeProperty links,name,id -Property @{N="$($Myself)Name";E={$_.name}},
+        @{N="$($Myself)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
+    }
+    End
+    {
+
+    }
+}
+
+function Get-SIOSds
+{
+    [CmdletBinding()]
+    [OutputType([int])]
+    Param
+    (
+    [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,Position = 1)]$ProtectionDomainID
+    )
+    Begin
+    {
+    $Myself = $MyInvocation.MyCommand.Name.Substring(7)
+        $Instance = "ProtectionDomain"
+
+    }
+    Process
+    {
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances/$Instance::$ProtectionDomainID/relationships/$Myself" -Headers $ScaleIOAuthHeaders -Method Get) | Select-Object  -ExcludeProperty links,name,id -Property @{N="$($Myself)Name";E={$_.name}},
+        @{N="$($Myself)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
+    }
+    End
+    {
+
+    }
+}
+
+function Get-SIOFaultSet
+{
+    [CmdletBinding()]
+    [OutputType([int])]
+    Param
+    (
+    [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,Position = 1)]$ProtectionDomainID
+    )
+    Begin
+    {
+    $Myself = $MyInvocation.MyCommand.Name.Substring(7)
+    $Instance = "ProtectionDomain"
+    }
+    Process
+    {
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances/$Instance::$ProtectionDomainID/relationships/$Myself" -Headers $ScaleIOAuthHeaders -Method Get) | Select-Object  -ExcludeProperty links,name,id -Property @{N="$($Myself)Name";E={$_.name}},
+        @{N="$($Myself)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
+    }
+    End
+    {
+
+    }
+}
+####
+
+<##
+(Invoke-RestMethod -Uri "$SIOBaseUrl/api/types/Volume/instances" -Headers $global:ScaleIOAuthHeaders -Method Get).links
+rel                                                        href                                                      
+---                                                        ----                                                      
+self                                                       /api/instances/Volume::c10c03fb00000000                   
+/api/Volume/relationship/Statistics                        /api/instances/Volume::c10c03fb00000000/relationships/S...
+/api/parent/relationship/vtreeId                           /api/instances/VTree::1f12ec7f00000000                    
+/api/parent/relationship/storagePoolId                     /api/instances/StoragePool::76733fa700000000              
+##>
+
+function Get-SIOVolume
+{
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,ParameterSetName='3')]
+        [Alias("VID")]
+        [ValidatePattern("[0-9A-F]{16}")][string[]]$VolumeID,
+        [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,ParameterSetName='4')]
+        [ValidatePattern("[0-9A-F]{16}")][String[]]$StoragePoolID,
+        [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,ParameterSetName='5')]
+        [ValidatePattern("[0-9A-F]{16}")][String[]]$VTreeID
+    )
+    Begin
+    {
+    $Myself = $MyInvocation.MyCommand.Name.Substring(7)
+    }
+    Process
+    {
+        switch ($PsCmdlet.ParameterSetName)
+        {
+        "1"
+            {
+            $Instance = "System"
+            $InstanceID = $SystemID 
+            }
+        "2"
+            {
+            $Instance = "ProtectionDomain"
+            $InstanceID = $ProtectionDomainID
+            }
+        "3"
+            {
+            $Instance = "Volume"
+            $InstanceID = $VolumeID
+            }
+        "4"
+            {
+            $Instance = "StoragePool"
+            $InstanceID = $StoragePoolID
+            }
+        "5"
+            {
+            $Instance = "VTree"
+            $InstanceID = $VTreeID
+            }
+        "6"
+            {
+            $Instance = "User"
+            $InstanceID = $UserID
+            }
+        }
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances/$Instance::$InstanceID/relationships/$Myself" -Headers $ScaleIOAuthHeaders -Method Get) | Select-Object  -ExcludeProperty links,name,id -Property @{N="$($Myself)Name";E={$_.name}},
+        @{N="$($Myself)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
+    }
+    End
+    {
+
+    }
+
+}
+
+
+
 
 <#
 .Synopsis

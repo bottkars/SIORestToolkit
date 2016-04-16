@@ -42,8 +42,7 @@ function Add-SIOmappedSDC
         }
     catch
         {
-        #Get-VolumeWebException -ExceptionMessage 
-        $_.Exception.Message
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
         break
         }
     
@@ -109,8 +108,7 @@ function Remove-SIOmappedSDC
         }
     catch
         {
-        #Get-VolumeWebException -ExceptionMessage 
-        $_.Exception.Message
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
         break
         }
     
@@ -180,7 +178,7 @@ function Remove-SIOVolume
                 }
             catch
                 {
-                $_.Exception.Message
+                Get-SIOWebException -ExceptionMessage $_.Exception.Message
                 break
                 }
             Write-Host -ForegroundColor White "VOlume $VolumeID Removed"

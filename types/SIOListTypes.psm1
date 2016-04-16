@@ -26,11 +26,16 @@ function Get-SIOdeviceList
     }
     Process
     {
-    (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
-    @{N="$($type)ID";E={$_.id}},* 
-    <#    
-    @{N="SDCName";E={$_.name}},
-    #>
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
+        @{N="$($type)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
     }
     End
     {
@@ -51,9 +56,16 @@ function Get-SIOfaultSetList
     }
     Process
     {
-    (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
-    @{N="$($type)ID";E={$_.id}},* 
-
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
+        @{N="$($type)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
     }
     End
     {
@@ -74,8 +86,16 @@ function Get-SIOprotectionDomainList
     }
     Process
     {
-    (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
-    @{N="$($type)ID";E={$_.id}},* 
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
+        @{N="$($type)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
     }
     End
     {
@@ -96,9 +116,16 @@ function Get-SIOrfcacheDeviceList
     }
     Process
     {
-    (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
-    @{N="$($type)ID";E={$_.id}},* 
-
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
+        @{N="$($type)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
     }
     End
     {
@@ -119,8 +146,16 @@ function Get-SIOsdcList
     }
     Process
     {
-    (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
-    @{N="$($type)ID";E={$_.id}},* 
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
+        @{N="$($type)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
 
     }
     End
@@ -142,8 +177,16 @@ function Get-SIOsdsList
     }
     Process
     {
-    (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
-    @{N="$($type)ID";E={$_.id}},* 
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
+        @{N="$($type)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
 
     }
     End
@@ -165,8 +208,16 @@ function Get-SIOstoragePoolList
     }
     Process
     {
-    (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
-    @{N="$($type)ID";E={$_.id}},* 
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
+        @{N="$($type)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
 
     }
     End
@@ -188,8 +239,16 @@ function Get-SIOvolumeList
     }
     Process
     {
-    (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
-    @{N="$($type)ID";E={$_.id}},* 
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
+        @{N="$($type)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
 
     }
     End
@@ -211,8 +270,16 @@ function Get-SIOvTreeList
     }
     Process
     {
-    (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
-    @{N="$($type)ID";E={$_.id}},* 
+    try
+        {
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances" -Headers $ScaleIOAuthHeaders -Method Get).$typelist | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
+        @{N="$($type)ID";E={$_.id}},* 
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
 
     }
     End

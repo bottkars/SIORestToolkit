@@ -65,7 +65,7 @@ function New-SIOVolume
         }
     catch
         {
-        Get-VolumeWebException -ExceptionMessage $_.Exception.Message
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
         break
         }
     
@@ -75,61 +75,3 @@ function New-SIOVolume
     {}
 }
 
-
-function Get-SIOVolume
-{
-    [CmdletBinding()]
-    [OutputType([int])]
-    Param
-    (
-        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,ParameterSetName='1')]
-        [Alias("VID")]
-        [validateLength(16,16)][ValidatePattern("[0-9A-F]{16}")]$VolumeID
-
-    )
-    Begin
-    {
-    $type = $MyInvocation.MyCommand.Name -replace "Get-SIO",""
-    }
-    Process
-    {
-    try
-        {
-        Invoke-RestMethod -Uri "$SIObaseurl/api/instances/$type::$VolumeID" -Headers $ScaleIOAuthHeaders -Method Get | Select-Object -ExcludeProperty links,name,id -Property @{N="$($type)Name";E={$_.name}},
-        @{N="$($type)ID";E={$_.id}},*
-        }
-    catch
-        {
-        Get-VolumeWebException -ExceptionMessage $_.Exception.Message
-        break
-        }
-    }
-    End
-    {}
-}
-
-Function Get-VolumeWebException
-    {
-    [CmdletBinding()]
-    [OutputType([int])]
-    Param
-    (
-        $ExceptionMessage
-
-    )
-        $type = $MyInvocation.MyCommand.Name -replace "Get-","" -replace "WebException",""
-        switch -Wildcard ($ExceptionMessage)
-            {
-            "*(500)*"
-                {
-                Write-Host -ForegroundColor White $ExceptionMessage
-                Write-Host -ForegroundColor White "The error indicates that the $Type does not exist or already exists"
-                }
-            default
-                {
-                Write-Host -ForegroundColor White "general error"
-                $_ | fl *
-                }                 
-            }
-
-    }

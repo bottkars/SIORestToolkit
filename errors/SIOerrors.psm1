@@ -19,7 +19,7 @@ Function Get-SIOWebException
             "*401*"
                 {
                 Write-Host -ForegroundColor White $ExceptionMessage
-                Write-Host -ForegroundColor White "Maybe wrong User/Password ?"
+                Write-Host -ForegroundColor White "Session expired or wrong User/Password ?"
                 }
 
             "*403*"
