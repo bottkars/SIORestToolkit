@@ -8,7 +8,7 @@
 .EXAMPLE
    Another example of how to use this cmdlet
 #>
-function Connect-SIOGateway
+function Connect-SIOmdm
 {
     [CmdletBinding()]
     [OutputType([int])]
