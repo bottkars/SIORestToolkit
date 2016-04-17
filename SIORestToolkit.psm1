@@ -21,26 +21,19 @@ function Connect-SIOmdm
         $GatewayIP = "192.168.2.193",
         $GatewayPort = 443,
         $user = "admin",
-        $password = "Password123!"
+        $password = "Password123!",
+        [switch]$trustCert = $true
     )
 
     Begin
     {
+    if ($trustCert.IsPresent)
+        {
+        Unblock-SIOCerts
+        }  
     }
     Process
     {
-    Add-Type -TypeDefinition @"
-	    using System.Net;
-	    using System.Security.Cryptography.X509Certificates;
-	    public class TrustAllCertsPolicy : ICertificatePolicy {
-	        public bool CheckValidationResult(
-	            ServicePoint srvPoint, X509Certificate certificate,
-	            WebRequest request, int certificateProblem) {
-	            return true;
-	        }
-	    }
-"@
-    [System.Net.ServicePointManager]::CertificatePolicy = New-Object -TypeName TrustAllCertsPolicy
     $SecurePassword = ConvertTo-SecureString $password -AsPlainText -Force
     $Credentials = New-Object System.Management.Automation.PSCredential (“$user”,$Securepassword)
     write-Verbose "Generating Login Token"

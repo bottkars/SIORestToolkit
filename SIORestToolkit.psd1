@@ -70,7 +70,8 @@ NestedModules = @(
 '.\actions\SIOmdm.psm1'
 '.\actions\SIOvolume.psm1'
 '.\errors\SIOerrors.psm1',
-'.\gateway\SIOgateway.psm1'
+'.\gateway\SIOgateway.psm1',
+'.\utils\utils.psm1'
 )
 
 # Functions to export from this module

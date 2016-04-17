@@ -14,33 +14,25 @@ function Connect-SIOGateway
     [OutputType([int])]
     Param
     (
-        # Param1 help description
         [Parameter(Mandatory=$true,
                    ValueFromPipelineByPropertyName=$true,
                    Position=0)]
         $GatewayIP = "192.168.2.223",
         $GatewayPort = 443,
         $user = "admin",
-        $password = "admin"
+        $password = "admin",
+        [switch]$trustCert = $true
     )
 
     Begin
     {
+    if ($trustCert.IsPresent)
+        {
+        Unblock-SIOCerts
+        }
     }
     Process
     {
-    Add-Type -TypeDefinition @"
-	    using System.Net;
-	    using System.Security.Cryptography.X509Certificates;
-	    public class TrustAllCertsPolicy : ICertificatePolicy {
-	        public bool CheckValidationResult(
-	            ServicePoint srvPoint, X509Certificate certificate,
-	            WebRequest request, int certificateProblem) {
-	            return true;
-	        }
-	    }
-"@
-    [System.Net.ServicePointManager]::CertificatePolicy = New-Object -TypeName TrustAllCertsPolicy
     $SecurePassword = ConvertTo-SecureString $password -AsPlainText -Force
     $Credentials = New-Object System.Management.Automation.PSCredential (“$user”,$Securepassword)
     write-Verbose "Generating Login Token"
@@ -304,7 +296,6 @@ function Add-SIOTrustedHostCertificate
     try
         {
         Invoke-RestMethod -Uri "$SIObaseurl/api/trustHostCertificate/$($Type)" -Headers $ScaleIOGatewayAuthHeaders -Method Post -InFile $infile -ContentType "multipart/form-data"
-        #Invoke-RestMethod -Uri "$SIObaseurl/api/trustHostCertificate/$($Type)" -Headers $ScaleIOGatewayAuthHeaders -Method Post -InFile $infile
         }
     catch
         {
