@@ -558,7 +558,7 @@ function Get-SIOVolume
     (
         [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,ParameterSetName='3')]
         [Alias("VID")]
-        [ValidatePattern("[0-9A-F]{16}")][string[]]$VolumeID,
+        [ValidatePattern("[0-9A-F]{16}")][string]$VolumeID,
         [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,ParameterSetName='4')]
         [ValidatePattern("[0-9A-F]{16}")][String[]]$StoragePoolID,
         [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,ParameterSetName='5')]
@@ -605,7 +605,7 @@ function Get-SIOVolume
         }
     try
         {
-        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances/$Instance::$InstanceID/relationships/$Myself" -Headers $ScaleIOAuthHeaders -Method Get) | Select-Object  -ExcludeProperty links,name,id -Property @{N="$($Myself)Name";E={$_.name}},
+        (Invoke-RestMethod -Uri "$SIObaseurl/api/instances/$Instance::$InstanceID" -Headers $ScaleIOAuthHeaders -Method Get) | Select-Object  -ExcludeProperty links,name,id -Property @{N="$($Myself)Name";E={$_.name}},
         @{N="$($Myself)ID";E={$_.id}},* 
         }
     catch

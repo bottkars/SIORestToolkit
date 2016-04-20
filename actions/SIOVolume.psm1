@@ -112,7 +112,7 @@ function Remove-SIOmappedSDC
         break
         }
     
-    Get-SIOVolume -VolumeID $VolumeID
+    #Get-SIOVolume -VolumeID $VolumeID
     }
     End
     {

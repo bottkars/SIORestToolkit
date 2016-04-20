@@ -68,7 +68,7 @@ function New-SIOVolume
         Get-SIOWebException -ExceptionMessage $_.Exception.Message
         break
         }
-    
+    Write-Verbose $NewVolume.id
     Get-SIOVolume -VolumeID $NewVolume.ID
     }
     End
