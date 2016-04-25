@@ -19,9 +19,10 @@ function Connect-SIOGateway
                    Position=0)]
         $GatewayIP = "192.168.2.223",
         $GatewayPort = 443,
-        $user = "admin",
-        $password = "admin",
-        [switch]$trustCert = $true
+        [Parameter(Mandatory=$false,
+                   ValueFromPipeline=$true,
+                   Position=0)][pscredential]$Credentials,
+        [switch]$trustCert
     )
 
     Begin
@@ -33,8 +34,13 @@ function Connect-SIOGateway
     }
     Process
     {
-    $SecurePassword = ConvertTo-SecureString $password -AsPlainText -Force
-    $Credentials = New-Object System.Management.Automation.PSCredential (“$user”,$Securepassword)
+    if (!$Credentials)
+        {
+        $User = Read-Host -Prompt "Please Enter ScaleIO MDM username"
+        $SecurePassword = Read-Host -Prompt "Enter ScaleIO Password for user $user" -AsSecureString
+        $Credentials = New-Object System.Management.Automation.PSCredential (“$user”,$Securepassword)
+        }
+
     write-Verbose "Generating Login Token"
     $Global:SIObaseurl = "https://$($GatewayIP):$GatewayPort" # :$GatewayPort"
     Write-Verbose $SIObaseurl

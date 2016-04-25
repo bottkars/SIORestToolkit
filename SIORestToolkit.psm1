@@ -20,9 +20,10 @@ function Connect-SIOmdm
                    Position=0)]
         $GatewayIP = "192.168.2.193",
         $GatewayPort = 443,
-        $user = "admin",
-        $password = "Password123!",
-        [switch]$trustCert = $true
+        [Parameter(Mandatory=$false,
+                   ValueFromPipeline=$true,
+                   Position=0)][pscredential]$Credentials,
+        [switch]$trustCert
     )
 
     Begin
@@ -34,8 +35,12 @@ function Connect-SIOmdm
     }
     Process
     {
-    $SecurePassword = ConvertTo-SecureString $password -AsPlainText -Force
-    $Credentials = New-Object System.Management.Automation.PSCredential (“$user”,$Securepassword)
+    if (!$Credentials)
+        {
+        $User = Read-Host -Prompt "Please Enter ScaleIO MDM username"
+        $SecurePassword = Read-Host -Prompt "Enter ScaleIO Password for user $user" -AsSecureString
+        $Credentials = New-Object System.Management.Automation.PSCredential (“$user”,$Securepassword)
+        }
     write-Verbose "Generating Login Token"
     $Global:SIObaseurl = "https://$($GatewayIP):$GatewayPort" # :$GatewayPort"
     Write-Verbose $SIObaseurl
@@ -69,7 +74,6 @@ function Connect-SIOmdm
     {
     }
 }
-
 <#
 .Synopsis
    Short description
@@ -115,7 +119,6 @@ function Get-SIOmdmCluster
     {
     }
 }
-
 <#
 .Synopsis
    Short description
@@ -164,8 +167,6 @@ function Get-SIOSystem
 
     }
 }
-
-
 <######
 
 System........................................................................................................... 577
@@ -212,8 +213,6 @@ function Get-SIOAPIversion
 
     }
 }
-
-
 <## from (Invoke-RestMethod -Uri "$SIOBaseUrl/api/instances" -Headers $global:ScaleIOAuthHeaders -Method Get).System.links
 rel                                                                                      href                                                                                    
 ---                                                                                      ----                                                                                    
