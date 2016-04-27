@@ -66,6 +66,7 @@ PowerShellVersion = '3.0'
 NestedModules = @(
 '.\types\siovolume.psm1',
 '.\types\siouser.psm1',
+'.\types\sioalert.psm1',
 '.\types\siolisttypes.psm1',
 '.\actions\SIOmdm.psm1'
 '.\actions\SIOvolume.psm1'

@@ -11,6 +11,13 @@ Function Get-SIOWebException
         $type = $MyInvocation.MyCommand.Name -replace "Get-","" -replace "WebException",""
         switch -Wildcard ($ExceptionMessage)
             {
+            "*SSL/TLS secure channel*"
+                {
+                Write-Host -ForegroundColor Magenta $ExceptionMessage
+                Write-Host -ForegroundColor White "SSL/TLS secure channel error indicates untrasted certificates. Connect using -trustCert Option !"
+                }
+
+
             "*400*"
                 {
                 Write-Host -ForegroundColor White $ExceptionMessage

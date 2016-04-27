@@ -3,7 +3,8 @@
     [CmdletBinding()]
     Param
     (
-
+    [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true,ParameterSetName='1')]
+    $AlertID
     )
     Begin
     {
@@ -11,10 +12,17 @@
     }
     Process
     {
-
+    if  ($AlertID)
+        {
+        $Uri = "$SIObaseurl/api/instances/$($Myself)::$AlertID"
+        }
+    else
+        {
+        $uri = "$SIObaseurl/api/types/$Myself/instances"
+        }
     try
         {
-        (Invoke-RestMethod -Uri "$SIObaseurl/api/types/$Myself/instances" -Headers $ScaleIOAuthHeaders -Method Get) | Select-Object  -ExcludeProperty links,name,id -Property @{N="$($Myself)Name";E={$_.name}},
+        (Invoke-RestMethod -Uri $Uri -Headers $ScaleIOAuthHeaders -Method Get) | Select-Object  -ExcludeProperty links,name,id -Property @{N="$($Myself)Name";E={$_.name}},
         @{N="$($Myself)ID";E={$_.id}},* 
         }
     catch
