@@ -45,7 +45,6 @@ function Get-SIOmdm
 function Get-SIOVolume
 {
     [CmdletBinding()]
-    [OutputType([int])]
     Param
     (
     )
