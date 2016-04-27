@@ -297,11 +297,18 @@ function Add-SIOTrustedHostCertificate
     }
     Process
     {
- 
+    $Content = Get-Content  -Path $infile | Out-String
+    $JSonBody = [ordered]@{ file = $infile} | ConvertTo-Json 
+         if ($PSCmdlet.MyInvocation.BoundParameters["verbose"].IsPresent)
+            {
+            Write-Host -ForegroundColor Yellow "Calling $uri with Method $method and body:
+            $JSonBody"
+            }
+
 
     try
         {
-        Invoke-RestMethod -Uri "$SIObaseurl/api/trustHostCertificate/$($Type)" -Headers $ScaleIOGatewayAuthHeaders -Method Post -InFile $infile -ContentType "multipart/form-data"
+        Invoke-RestMethod -Uri "$SIObaseurl/api/trustHostCertificate/$($Type)" -Headers $ScaleIOGatewayAuthHeaders -Method Post -Body $JSonBody -ContentType "multipart/form-data"
         }
     catch
         {
