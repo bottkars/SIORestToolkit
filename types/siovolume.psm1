@@ -21,7 +21,6 @@ useRmcache Boolean Optional
 function New-SIOVolume
 {
     [CmdletBinding()]
-    [OutputType([int])]
     Param
     (
     # Specify the SIO Pool
