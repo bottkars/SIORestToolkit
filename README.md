@@ -7,6 +7,12 @@ It requires ScaleIO 2.0 Systems installed.
 The Modulkes are loaded via Import-Module SIORestToolKit
 The Module sudirectories are based on the role of functions , eg types, actions, errors.
 
+in order to runs the command, you need to unrestrict executiopolicy.
+open a powershell as admin and run
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted
+```
+
 To start with the Modules, connect to a ScaleIO Gateway with
 ```Powershell
 Connect-SIOGateway -GatewayIP 192.168.2.193 -user admin -password Password123!
