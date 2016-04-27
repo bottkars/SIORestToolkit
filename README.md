@@ -7,7 +7,8 @@ It requires ScaleIO 2.0 Systems installed.
 The Modulkes are loaded via Import-Module SIORestToolKit
 The Module sudirectories are based on the role of functions , eg types, actions, errors.
 
-in order to runs the command, you need to unrestrict executiopolicy.
+in order to run the commands, you need to unrestrict executionpolicy.
+also, make sure to unblock the zipfile if you download the modules as zip and not via git
 open a powershell as admin and run
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
