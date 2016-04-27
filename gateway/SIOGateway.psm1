@@ -56,8 +56,8 @@ function Connect-SIOGateway
         }
         #>
         $auth = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(':'+$Token))
-        $global:ScaleIOGatewayAuthHeaders = @{'Authorization' = "Basic $auth"
-        'Content-Type' = "application/json"}
+        $global:ScaleIOGatewayAuthHeaders = @{'Authorization' = "Basic $auth"}
+        #'Content-Type' = "application/json"}
         Write-Host "Successfully connected to ScaleIO $SIObaseurl"
         Get-SIOGatewayConfiguration
         # Write-Output $ScaleIOAuthHeaders

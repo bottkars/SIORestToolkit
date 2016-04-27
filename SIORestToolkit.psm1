@@ -57,8 +57,8 @@ function Connect-SIOmdm
         }
         #>
         $auth = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(':'+$Token))
-        $global:ScaleIOAuthHeaders = @{'Authorization' = "Basic $auth"
-        'Content-Type' = "application/json"}
+        $global:ScaleIOAuthHeaders = @{'Authorization' = "Basic $auth"}
+        #        'Content-Type' = "application/json"
         Write-Host "Successfully connected to ScaleIO $SIObaseurl"
         Get-SIOSystem 
         # Write-Output $ScaleIOAuthHeaders
