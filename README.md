@@ -7,13 +7,20 @@ It requires ScaleIO 2.0 Systems installed.
 The Modulkes are loaded via Import-Module SIORestToolKit
 The Module sudirectories are based on the role of functions , eg types, actions, errors.
 
+I Recommend cloning into the modules using and do regular pulls for update rather tan downloading the zip. this also eleimnates the need for unblocking the zip archive !!! )
+
+consider https://desktop.github.com/ for windows
+
 in order to run the commands, you need to unrestrict executionpolicy.
-also, make sure to unblock the zipfile if you download the modules as zip and not via git
+also, make sure to unblock the zipfile if you download the modules as zip and not via git ( unblock-file or right click in explorer )
 open a powershell as admin and run
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 ```
-
+import the modules
+```powershell
+import-module \path-to-moduledir\SIORestToolkit.psd1
+```
 To start with the Modules, connect to a ScaleIO Gateway with
 ```Powershell
 Connect-SIOGateway -GatewayIP 192.168.2.193 -user admin -password Password123!
