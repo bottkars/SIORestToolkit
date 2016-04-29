@@ -14,7 +14,7 @@ open a powershell as admin and run
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 ```
 
-## Installation  
+## installation  
 The Modulkes are loaded via Import-Module SIORestToolKit
 The Module sudirectories are based on the role of functions , eg types, actions, errors.
 
