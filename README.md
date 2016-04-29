@@ -4,19 +4,36 @@ Powershell Toolkit for EMC ScaleIO using the Rest  API Gateway
 The SIOrestToolkit utilizes the ScaleIO API 2.0 
 It requires ScaleIO 2.0 Systems installed.
 
-The Modulkes are loaded via Import-Module SIORestToolKit
-The Module sudirectories are based on the role of functions , eg types, actions, errors.
 
-I Recommend cloning into the modules using and do regular pulls for update rather tan downloading the zip. this also eleimnates the need for unblocking the zip archive !!! )
 
-consider https://desktop.github.com/ for windows
-
+###requirements
 in order to run the commands, you need to unrestrict executionpolicy.
 also, make sure to unblock the zipfile if you download the modules as zip and not via git ( unblock-file or right click in explorer )
 open a powershell as admin and run
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 ```
+
+## Installation  
+The Modulkes are loaded via Import-Module SIORestToolKit
+The Module sudirectories are based on the role of functions , eg types, actions, errors.
+
+use this Automatic downloader to install SIORestToolKit:
+```Powershell
+$Uri="https://gist.githubusercontent.com/bottkars/b3f4556abbaf1f5f3b402ab6b87c9d77/raw/Install-SIORestToolkit.ps1"
+$DownloadLocation = "$Env:USERPROFILE\Downloads"
+$File = Split-Path -Leaf $Uri
+$OutFile = Join-Path $DownloadLocation $File
+Invoke-WebRequest -Uri $Uri -OutFile $OutFile
+Unblock-File -Path $Outfile
+Set-Location $DownloadLocation
+.\install-SIORestToolkit.ps1 -Installpath [replacewithyourdestination]
+```
+## alternative installation  
+if not using the Downloader, i Recommend cloning into the modules using and do regular pulls for update rather tan downloading the zip. this also eliminates the need for unblocking the zip archive !!! )
+
+consider https://desktop.github.com/ for windows
+
 import the modules
 ```powershell
 import-module \path-to-moduledir\SIORestToolkit.psd1
