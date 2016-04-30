@@ -1,10 +1,10 @@
 ﻿function Move-SIOMDMownerShip
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     Param
     (
         [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,ParameterSetName='1')]
-        [Alias("MdmID")]
+        [Alias("ID")]
         [validateLength(16,16)][ValidatePattern("[0-9A-F]{16}")]$SlaveMmdId
 
     )
@@ -24,10 +24,17 @@
     Write-Host -ForegroundColor White "mdm successfully to $SlaveMmdId, waiting for Gateway on configuration update"
     do 
         {
-        sleep 1
+        sleep 5
         Write-Verbose "Waiting for Gateway to Respond new Master MDM"
-        ($NewState = Get-SIOmdmCluster -ErrorAction SilentlyContinue).master
+        
+        try
+        {
+        $NewState = (Get-SIOmdmCluster -WarningAction SilentlyContinue).master
+        }
+        catch
+        {}
         } 
     until ($NewState)
+    $NewState
 }
 

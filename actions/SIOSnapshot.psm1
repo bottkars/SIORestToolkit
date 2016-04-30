@@ -147,7 +147,7 @@ function Restore-SIOSnapshot
 
     try
         {
-        Invoke-RestMethod -Uri "$SIObaseurl/api/instances/Volume::$ancestorVolumeId/action/revertSnapshot" -Headers $ScaleIOAuthHeaders -Method $method -Body $JSonBody -Verbose
+        Invoke-RestMethod -Uri "$SIObaseurl/api/instances/Volume::$ancestorVolumeId/action/revertSnapshot" -Body $JSonBody -Headers $ScaleIOAuthHeaders -Method $method -Verbose
         }
     catch
         {

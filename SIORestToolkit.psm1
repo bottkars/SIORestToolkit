@@ -66,7 +66,7 @@
 }
 function Get-SIOmdmCluster
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
         # Param1 help description
@@ -92,7 +92,6 @@ function Get-SIOmdmCluster
     catch
         {
         Get-SIOWebException -ExceptionMessage $_.Exception.Message
-        break
         }
     }
     End
