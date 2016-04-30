@@ -69,6 +69,7 @@ NestedModules = @(
 '.\types\sioalert.psm1',
 '.\types\siolisttypes.psm1',
 '.\types\SIOAlert.psm1',
+'.\types\SIOVtree.psm1',
 '.\actions\SIOmdm.psm1',
 '.\actions\SIOvolume.psm1',
 '.\actions\SIOSnapshot.psm1',

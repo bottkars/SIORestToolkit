@@ -108,3 +108,56 @@ function New-SIOSnapshot
     }
 }
 
+<#
+/api/instances/Volume::{id}/action/revertSnapshot
+
+Required:volumeId - Volumefrom URL and volumeId must be from the same VTree.revertMode -"move" or "copy" or"toggle"
+
+c00c50db00000000
+
+#>
+function Restore-SIOSnapshot
+{
+    [CmdletBinding()]
+    Param
+    (
+    # Specify the SIO Pool
+
+        [Parameter(Mandatory=$true,ParameterSetName='1',ValueFromPipelinebyPropertyName=$true)]
+        [Alias("AVid")]
+        [ValidatePattern("[0-9A-F]{16}")]$ancestorVolumeId,
+    # Specify the New Volume Name  
+        [Parameter(Mandatory=$true,ValueFromPipelinebyPropertyName=$true)][Alias("VID")]
+        [ValidatePattern("[0-9A-F]{16}")][String]$volumeId,
+    # Specify restore type 
+        [Parameter(Mandatory=$true)][ValidateSet('move','copy','toggle')][string]$revertMode 
+    )
+    Begin
+    {
+    $method = "POST"
+    }
+    Process
+    {
+    $JSonBody = @{  
+    volumeID = $VolumeId
+    revertMode = $revertMode } | ConvertTo-Json
+    pause
+    Write-Verbose "calling snapshot restore for $ancestorVolumeId from $volumeId"
+        Write-Verbose $JSonBody
+
+    try
+        {
+        Invoke-RestMethod -Uri "$SIObaseurl/api/instances/Volume::$ancestorVolumeId/action/revertSnapshot" -Headers $ScaleIOAuthHeaders -Method $method -Body $JSonBody -Verbose
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
+
+    }
+    End
+    {
+    }
+}
+

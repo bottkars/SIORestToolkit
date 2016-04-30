@@ -1,14 +1,4 @@
-﻿<#
-.Synopsis
-   Short description
-.DESCRIPTION
-   Long description
-.EXAMPLE
-   Example of how to use this cmdlet
-.EXAMPLE
-   Another example of how to use this cmdlet
-#>
-function Connect-SIOmdm
+﻿function Connect-SIOmdm
 {
     [CmdletBinding()]
     [OutputType([int])]
@@ -74,16 +64,6 @@ function Connect-SIOmdm
     {
     }
 }
-<#
-.Synopsis
-   Short description
-.DESCRIPTION
-   Long description
-.EXAMPLE
-   Example of how to use this cmdlet
-.EXAMPLE
-   Another example of how to use this cmdlet
-#>
 function Get-SIOmdmCluster
 {
     [CmdletBinding()]
@@ -119,16 +99,6 @@ function Get-SIOmdmCluster
     {
     }
 }
-<#
-.Synopsis
-   Short description
-.DESCRIPTION
-   Long description
-.EXAMPLE
-   Example of how to use this cmdlet
-.EXAMPLE
-   Another example of how to use this cmdlet
-#>
 function Get-SIOSystem
 {
     [CmdletBinding()]
@@ -167,25 +137,6 @@ function Get-SIOSystem
 
     }
 }
-<######
-
-System........................................................................................................... 577
-◆ Protection Domain ......................................................................................... 614
-◆ SDS................................................................................................................ 631
-◆ StoragePool ................................................................................................... 651
-◆ Device............................................................................................................ 669
-◆ Volume .......................................................................................................... 679
-◆ VTree.............................................................................................................. 685
-◆ SDC................................................................................................................ 688
-◆ User ............................................................................................................... 693
-◆ Fault Set......................................................................................................... 694
-◆ RfcacheDevice................................................................................................ 699
-◆ Alert............................................................................................................... 703
-◆ Installation Manager commands ....................................................................
-
-
-
-###>
 function Get-SIOAPIversion
 {
     [CmdletBinding()]
@@ -213,16 +164,6 @@ function Get-SIOAPIversion
 
     }
 }
-<## from (Invoke-RestMethod -Uri "$SIOBaseUrl/api/instances" -Headers $global:ScaleIOAuthHeaders -Method Get).System.links
-rel                                                                                      href                                                                                    
----                                                                                      ----                                                                                    
-self                                                                                     /api/instances/System::511ed7166c39d314                                                 
-/api/System/relationship/Statistics                                                      /api/instances/System::511ed7166c39d314/relationships/Statistics                        
-/api/System/relationship/ProtectionDomain                                                /api/instances/System::511ed7166c39d314/relationships/ProtectionDomain                  
-/api/System/relationship/Sdc                                                             /api/instances/System::511ed7166c39d314/relationships/Sdc                               
-/api/System/relationship/User                                                            /api/instances/System::511ed7166c39d314/relationships/User
-
-#>
 function Get-SIOStatistics
 {
     [CmdletBinding(DefaultParameterSetName='2'
@@ -428,20 +369,6 @@ function Get-SIOUser
 
     }
 }
-<#
-PS E:\GitHub> (Invoke-RestMethod -Uri "$SIOBaseUrl/api/types/ProtectionDomain/instances" -Headers $global:ScaleIOAuthHeaders -Method Get).links
-
-
-rel                                                                                     href                                                                                   
----                                                                                     ----                                                                                   
-self                                                                                    /api/instances/ProtectionDomain::f744ff1900000000                                      
-/api/ProtectionDomain/relationship/Statistics                                           /api/instances/ProtectionDomain::f744ff1900000000/relationships/Statistics             
-/api/ProtectionDomain/relationship/StoragePool                                          /api/instances/ProtectionDomain::f744ff1900000000/relationships/StoragePool            
-/api/ProtectionDomain/relationship/Sds                                                  /api/instances/ProtectionDomain::f744ff1900000000/relationships/Sds                    
-/api/ProtectionDomain/relationship/FaultSet                                             /api/instances/ProtectionDomain::f744ff1900000000/relationships/FaultSet               
-/api/parent/relationship/systemId                                                       /api/instances/System::511ed7166c39d314                                                
-#>
-
 function Get-SIOStoragePool
 {
     [CmdletBinding()]
@@ -473,7 +400,6 @@ function Get-SIOStoragePool
 
     }
 }
-
 function Get-SIOSds
 {
     [CmdletBinding()]
@@ -506,7 +432,6 @@ function Get-SIOSds
 
     }
 }
-
 function Get-SIOFaultSet
 {
     [CmdletBinding()]
@@ -538,26 +463,15 @@ function Get-SIOFaultSet
 
     }
 }
-####
-
-<##
-(Invoke-RestMethod -Uri "$SIOBaseUrl/api/types/Volume/instances" -Headers $global:ScaleIOAuthHeaders -Method Get).links
-rel                                                        href                                                      
----                                                        ----                                                      
-self                                                       /api/instances/Volume::c10c03fb00000000                   
-/api/Volume/relationship/Statistics                        /api/instances/Volume::c10c03fb00000000/relationships/S...
-/api/parent/relationship/vtreeId                           /api/instances/VTree::1f12ec7f00000000                    
-/api/parent/relationship/storagePoolId                     /api/instances/StoragePool::76733fa700000000              
-##>
-
 function Get-SIOVolume
 {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName='3')]
+    
     Param
     (
         [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,ParameterSetName='3')]
         [Alias("VID")]
-        [ValidatePattern("[0-9A-F]{16}")][string]$VolumeID,
+        [ValidatePattern("[0-9A-F]{16}")][string[]]$VolumeID,
         [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,ParameterSetName='4')]
         [ValidatePattern("[0-9A-F]{16}")][String[]]$StoragePoolID,
         [Parameter(Mandatory = $true,ValueFromPipelineByPropertyName=$true,ParameterSetName='5')]
@@ -619,32 +533,6 @@ function Get-SIOVolume
     }
 
 }
-
-
-
-
-<#
-.Synopsis
-   Short description
-.DESCRIPTION
-   Long description
-.EXAMPLE
-   Example of how to use this cmdlet
-.EXAMPLE
-   Another example of how to use this cmdlet
-.INPUTS
-   Inputs to this cmdlet (if any)
-.OUTPUTS
-   Output from this cmdlet (if any)
-.NOTES
-   General notes
-.COMPONENT
-   The component this cmdlet belongs to
-.ROLE
-   The role this cmdlet belongs to
-.FUNCTIONALITY
-   The functionality that best describes this cmdlet
-#>
 function Get-SIOyesno
 {
     [CmdletBinding(DefaultParameterSetName='Parameter Set 1', 
