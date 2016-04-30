@@ -37,4 +37,32 @@
     until ($NewState)
     $NewState
 }
+function Set-SIOMdmPerformanceParameters
+{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,ParameterSetName='1')]
+        [ValidateSet('Default','HighPerformance')]$perfProfile
+
+    )
+    begin {}
+    process {
+    $JSonBody = @{  
+     perfProfile = $perfProfile
+    } | ConvertTo-Json 
+    try
+        {
+        Invoke-RestMethod -Uri "$SIObaseurl/api/instances/System/action/setMdmPerformanceParameters" -Headers $ScaleIOAuthHeaders -Method Post -Body $JSonBody
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
+    Write-Host -ForegroundColor White "Performanceprofile set to $perfProfile"
+    }
+    end {}
+}
+
 
