@@ -1,70 +1,19 @@
-﻿<#/api/instances/Sd
-c::{id}/action/setS
-dcPerformancePar
-ameters
-Required:
-perfProfile -
-"Default" or
-"HighPerform
-ance"
-#>
-function Set-SIOSDSPerformanceParameters
-{
-    [CmdletBinding(SupportsShouldProcess)]
-    Param
-    (
-        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,ParameterSetName='1')]
-        [Alias("ID")]
-        [ValidatePattern("[0-9A-F]{16}")]$SDSid,
-        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,ParameterSetName='0')]
-        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,ParameterSetName='1')]
-        [ValidateSet('Default','HighPerformance')]$perfProfile
-
-    )
-    begin {
-     $JSonBody = @{  
-     perfProfile = $perfProfile
-    } | ConvertTo-Json
-    }
-    process {
-    switch ($PsCmdlet.ParameterSetName)
-        {
-        "0"
-            {
-            $uri = "$SIObaseurl/api/instances/System/action/setSdsPerformanceParameters"
-            }
-        "1"
-            {
-            $uri = "$SIObaseurl/api/instances/Sds::$SDSid/action/setSdsPerformanceParameters"
-            }
-       }
-    try
-        {
-        Invoke-RestMethod -Uri $uri -Headers $ScaleIOAuthHeaders -Method Post -Body $JSonBody
-        }
-    catch
-        {
-        Get-SIOWebException -ExceptionMessage $_.Exception.Message
-        break
-        }
-    
-    Write-Host -ForegroundColor White "Performanceprofile set to $perfProfile"
-    }
-    end {}
-}
+﻿
 
 <#Start devices test /api/instances/Sds::{id}/
-action/startDevicesTest
-POST
+/api/instances/Protectio
+nDomain::{id}/action/qu
+eryProtectionDomainNet
+work
 #>
-function Start-SIOSDSDevicesTest
+function Get-SIOProtectionDOmainNetwork
 {
     [CmdletBinding(SupportsShouldProcess)]
     Param
     (
         [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,ParameterSetName='1')]
         [Alias("ID")]
-        [ValidatePattern("[0-9A-F]{16}")]$SDSid
+        [ValidatePattern("[0-9A-F]{16}")]$ProtectionDOmainID
         #[Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,ParameterSetName='0')]
 
     )
@@ -76,21 +25,12 @@ totalIoSizeMB = "128"
 limitInSeconds = "10"
     } | ConvertTo-Json
     }
-    process {
-    switch ($PsCmdlet.ParameterSetName)
-        {
-        "0"
-            {
-            $uri = "$SIObaseurl/api/instances/System/action/setSdsPerformanceParameters"
-            }
-        "1"
-            {
-            $uri = "$SIObaseurl/api/instances/Sds::$SDSid/action/startDevicesTest"
-            }
-       }
+    process 
+    {
+    $uri = "$SIObaseurl/api/instances/ProtectionDomain::$ProtectionDOmainID/action/queryProtectionDomainNetwork"
     try
         {
-        Invoke-RestMethod -Uri $uri -Headers $ScaleIOAuthHeaders -Method Post -Body $JSonBody
+        Invoke-RestMethod -Uri $uri -Headers $ScaleIOAuthHeaders -Method Post | Select-Object -ExpandProperty Syncroot | Select-Object -ExpandProperty peerConnectionStates  #-Body $JSonBody
         }
     catch
         {
@@ -102,3 +42,99 @@ limitInSeconds = "10"
     end {}
 }
 
+<#
+/api/instances/ProtectionDomain::{id}/action/inactivateProtectionDomain
+#>
+
+function Suspend-SIOProtectionDomain
+{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,ParameterSetName='1')]
+        [Alias("ID")]
+        [ValidatePattern("[0-9A-F]{16}")]$ProtectionDOmainID,
+        #[Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,ParameterSetName='0')]
+        [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true,ParameterSetName='1')]
+        [switch]$forceShutdown
+    )
+    begin {
+     if ($forceShutdown.IsPresent)
+        {
+        $force = "TRUE"
+        }
+    else
+        {
+        $force = "FALSE"
+        }
+    $JSonBody = [ordered]@{  
+forceShutdown  = $force
+    } | ConvertTo-Json
+    }
+    process 
+    {
+    Write-Verbose $JSonBody
+    $uri = "$SIObaseurl/api/instances/ProtectionDomain::$ProtectionDOmainID/action/inactivateProtectionDomain"
+    try
+        {
+        Invoke-RestMethod -Uri $uri -Headers $ScaleIOAuthHeaders -Method Post # | Select-Object -ExpandProperty Syncroot | Select-Object -ExpandProperty peerConnectionStates  #-Body $JSonBody
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
+    
+    }
+    end {}
+}
+
+<#
+Software type resources 625
+REST API Reference
+/api/instances/Protectio
+nDomain::{id}/action/acti
+vateProtectionDomain#>
+
+function Resume-SIOProtectionDomain
+{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,ParameterSetName='1')]
+        [Alias("ID")]
+        [ValidatePattern("[0-9A-F]{16}")]$ProtectionDOmainID,
+        #[Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,ParameterSetName='0')]
+        [Parameter(Mandatory=$false,ValueFromPipelineByPropertyName=$true,ParameterSetName='1')]
+        [switch]$forceActivate
+    )
+    begin {
+     if ($forceActivate.IsPresent)
+        {
+        $force = "TRUE"
+        }
+    else
+        {
+        $force = "FALSE"
+        }
+    $JSonBody = [ordered]@{  
+forceActivate  = $force
+    } | ConvertTo-Json
+    }
+    process 
+    {
+    Write-Verbose $JSonBody
+    $uri = "$SIObaseurl/api/instances/ProtectionDomain::$ProtectionDOmainID/action/inactivateProtectionDomain"
+    try
+        {
+        Invoke-RestMethod -Uri $uri -Headers $ScaleIOAuthHeaders -Method Post # | Select-Object -ExpandProperty Syncroot | Select-Object -ExpandProperty peerConnectionStates  #-Body $JSonBody
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
+    
+    }
+    end {}
+}
