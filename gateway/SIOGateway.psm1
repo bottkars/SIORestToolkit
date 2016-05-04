@@ -252,21 +252,19 @@ function Get-SIOHostCertificate
     }
     Process
     {
-            $Body = @{
-          
-        mdmIp = $mdmIp.IPAddressToString
-        ips = @($ips.IPAddressToString)
-        }
-        #updateConfiguration = $updateConfiguration.IsPresent
-        #}
-        $JSonBody = ConvertTo-Json $Body -Depth 2
-        if (!$outfile)
+
+    if (!$outfile)
             {
             $outfile = "$($ip.IPAddressToString).cer"
             }
+    $uri = "$SIObaseurl/api/getHostCertificate/$($Type)?host=$($IP.IPAddressToString)" 
+    if ($PSCmdlet.MyInvocation.BoundParameters["verbose"].IsPresent)
+        {
+        Write-Host -ForegroundColor Yellow "Calling $uri with Method $method"
+        }
     try
         {
-        Invoke-RestMethod -Uri "$SIObaseurl/api/getHostCertificate/$($Type)?host=$($IP.IPAddressToString)" -Headers $ScaleIOGatewayAuthHeaders -Method Get -OutFile $outfile
+        Invoke-RestMethod -Uri "$Uri" -Headers $ScaleIOGatewayAuthHeaders -Method Get -OutFile $outfile
         }
     catch
         {
@@ -274,6 +272,11 @@ function Get-SIOHostCertificate
         break
         }
         Write-Host "Certificate written as $outfile"
+        if ($PSCmdlet.MyInvocation.BoundParameters["verbose"].IsPresent)
+        {
+            Get-Content $outfile
+        }
+
     }
     End
     {
