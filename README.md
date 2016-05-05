@@ -111,7 +111,7 @@ mappingToAllSdcsEnabled : False
 ```
 ### creating an reverting snapshots  
 the toolkit supports all 3 snaphot revert calls: move, toggle an copy
-here is an example for creating a volume + snap and toggle bot volumes after
+here is an example for creating a volume + snap and toggle both volumes after
 
 ```Powershell
 PS C:\emcworld> $vol = New-SIOVolume -storagePoolID $pool.storagePoolID -VolumeName MasterVol -Thin -SizeInGB 8
