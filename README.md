@@ -148,3 +148,25 @@ MasterVol  5b29022500000000   1462403622       True        False Snapshot
 
 PS C:\emcworld>
 ```
+#### moving a snaphot ( deleting the snap )
+
+```Powershell
+PS C:\emcworld> Restore-SIOSnapshot -ancestorVolumeId 5b29022500000000 -volumeId 5b290226
+00000001 -revertMode move
+
+Commit Volume restore
+Content from 5b29022500000000 will be moved to 5b29022600000001, 5b29022500000000 will
+be removed
+[N] No  [Y] Yes  [?] Hilfe (Standard ist "N"): y
+executed move from 5b29022500000000 to 5b29022600000001
+PS C:\emcworld> Get-SIOvolumeList | ft
+
+volumeName volumeID         creationTime useRmcache isObfuscated volumeType      consist
+                                                                                 encyGro
+                                                                                 upId
+---------- --------         ------------ ---------- ------------ ----------      -------
+MasterVol  5b29022500000000   1462403569       True        False ThinProvisioned
+
+```
+
+
