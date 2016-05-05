@@ -118,7 +118,12 @@ c00c50db00000000
 #>
 function Restore-SIOSnapshot
 {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName='1', 
+                  SupportsShouldProcess=$true, 
+                  PositionalBinding=$false,
+                  HelpUri = 'https://github.com/bottkars/SIORestToolkit',
+    ConfirmImpact='Medium'
+    )]
     Param
     (
     # Specify the SIO Pool
@@ -139,21 +144,54 @@ function Restore-SIOSnapshot
     Process
     {
     $JSonBody = @{  
-    volumeID = $VolumeId
+    volumeId = $VolumeId
     revertMode = $revertMode } | ConvertTo-Json
-    pause
-    Write-Verbose "calling snapshot restore for $ancestorVolumeId from $volumeId"
-        Write-Verbose $JSonBody
+    if ($ConfirmPreference -match "none")
+        { 
+        $commit = 1 
+        }
+    else
+        {
+        switch ($revertMode)
+            {
+                "toggle"
+                {
+                $Message = "Content of $volumeId and $ancestorVolumeId will be switched, id´s remain"
+                }
+                "copy"
+                {
+                $Message = "Content from $ancestorVolumeId will be copied to $volumeId, id´s remain"
+                 }
+                "move"
+                {
+                $Message = "Content from $ancestorVolumeId will be moved to $volumeId, $ancestorVolumeId will be removed"
+                }
+            }
+        $commit = Get-SIOyesno -title "Commit Volume restore" -message $Message
+        }
+    Switch ($commit)
+        {
+        1
+            {
+            Write-Verbose "calling snapshot restore for $ancestorVolumeId from $volumeId"
+            Write-Verbose $JSonBody
 
-    try
-        {
-        Invoke-RestMethod -Uri "$SIObaseurl/api/instances/Volume::$ancestorVolumeId/action/revertSnapshot" -Body $JSonBody -Headers $ScaleIOAuthHeaders -Method $method -Verbose
-        }
-    catch
-        {
-        Get-SIOWebException -ExceptionMessage $_.Exception.Message
-        break
-        }
+            try
+                {
+                Invoke-RestMethod -Uri "$SIObaseurl/api/instances/Volume::$ancestorVolumeId/action/revertSnapshot" -Body $JSonBody -Headers $ScaleIOAuthHeaders -Method $method
+                }
+            catch
+                {
+                Get-SIOWebException -ExceptionMessage $_.Exception.Message
+                break
+                }
+            Write-Host "executed $revertMode from $ancestorVolumeId to $volumeId"
+            }
+        0
+            {
+            Write-Warning "Volume Deletion refused by user for Volume $VolumeID"
+            }  
+        }    
 
     }
     End

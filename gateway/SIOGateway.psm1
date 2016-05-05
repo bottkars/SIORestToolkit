@@ -264,7 +264,7 @@ function Get-SIOHostCertificate
         }
     try
         {
-        Invoke-RestMethod -Uri "$Uri" -Headers $ScaleIOGatewayAuthHeaders -Method Get -OutFile $outfile
+        Invoke-RestMethod -Uri "$Uri" -Headers $ScaleIOGatewayAuthHeaders -Method Get -OutFile $outfile -SessionVariable mycert
         }
     catch
         {
@@ -275,6 +275,7 @@ function Get-SIOHostCertificate
         if ($PSCmdlet.MyInvocation.BoundParameters["verbose"].IsPresent)
         {
             Get-Content $outfile
+            $mycert
         }
 
     }
@@ -300,18 +301,20 @@ function Add-SIOTrustedHostCertificate
     }
     Process
     {
-    $Content = Get-Content  -Path $infile | Out-String
-    $JSonBody = [ordered]@{ file = $infile} | ConvertTo-Json 
+    Content = Get-Content  -Path $infile | Out-String
+    $JSonBody = [ordered]@{ filename = (split-path -Leaf  $infile )
+    
+    } | ConvertTo-Json 
          if ($PSCmdlet.MyInvocation.BoundParameters["verbose"].IsPresent)
             {
             Write-Host -ForegroundColor Yellow "Calling $uri with Method $method and body:
             $JSonBody"
             }
-
+            #>
 
     try
         {
-        Invoke-RestMethod -Uri "$SIObaseurl/api/trustHostCertificate/$($Type)" -Headers $ScaleIOGatewayAuthHeaders -Method Post -Body $JSonBody -ContentType "multipart/form-data"
+        Invoke-RestMethod -Uri "$SIObaseurl/api/trustHostCertificate/$($Type)" -Headers $ScaleIOGatewayAuthHeaders -Method Post -Body $JSonBody -ContentType 'multipart/form-data' -InFile $infile
         }
     catch
         {

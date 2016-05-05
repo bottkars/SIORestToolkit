@@ -24,7 +24,10 @@ Function Get-SIOWebException
             "*401*"
                 {
                 Write-Warning $ExceptionMessage
-                Write-Warning "Session expired or wrong User/Password ?"
+                Write-Warning "Session expired or wrong User/Password ?
+    for Gateway commands use: Connect-SIOGateway
+    for all other use: Connect-SIOmdm"
+                
                 }
 
             "*403*"
