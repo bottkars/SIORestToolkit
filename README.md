@@ -109,3 +109,42 @@ mappedSdcInfo           :
 mappingToAllSdcsEnabled : False
 
 ```
+### creating an reverting snapshots  
+the toolkit supports all 3 snaphot revert calls: move, toggle an copy
+here is an example for creating a volume + snap and toggle bot volumes after
+
+```Powershell
+PS C:\emcworld> $vol = New-SIOVolume -storagePoolID $pool.storagePoolID -VolumeName MasterVol -Thin -SizeInGB 8
+PS C:\emcworld> New-SIOSnapshot -SystemID $sys.SystemID -volumeId $vol.VolumeID -SnapshotName Mastersnap
+
+snapshotGroupId  volumeIdList
+---------------  ------------
+a7d3ba6100000001 {5b29022600000001}
+
+
+PS C:\emcworld> Get-SIOvolumeList | ft
+
+volumeName volumeID         creationTime useRmcache isObfuscated volumeType
+---------- --------         ------------ ---------- ------------ ----------
+MasterVol  5b29022500000000   1462403569       True        False ThinProvisioned
+Mastersnap 5b29022600000001   1462403622      False        False Snapshot
+
+
+PS C:\emcworld> Restore-SIOSnapshot -ancestorVolumeId 5b29022600000001 -volumeId
+$vol.VolumeID -revertMode toggle
+
+Commit Volume restore
+Content of 5b29022500000000 and 5b29022600000001 will be switched, id´s remain
+[N] No  [Y] Yes  [?] Hilfe (Standard ist "N"): y
+
+executed toggle from 5b29022600000001 to 5b29022500000000
+PS C:\emcworld> Get-SIOvolumeList | ft
+
+volumeName volumeID         creationTime useRmcache isObfuscated volumeType
+---------- --------         ------------ ---------- ------------ ----------
+Mastersnap 5b29022600000001   1462403569      False        False ThinProvisioned
+MasterVol  5b29022500000000   1462403622       True        False Snapshot
+
+
+PS C:\emcworld>
+```
