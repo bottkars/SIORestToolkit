@@ -53,4 +53,38 @@ function Set-SIOSDCPerformanceParameters
     end {}
 }
 
+<#
+/api/instances/Sd
+c::{id}/action/quer
+yOscillatingNetwor
+kCounters#>
+function Get-SIOSDCOscillatingNetworkCounters
+{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,ParameterSetName='1')]
+        [Alias("ID")]
+        [ValidatePattern("[0-9A-F]{16}")]$Sdcid
+    )
+    begin 
+    {
+    $Method = "POST"
+    }
+    process 
+    {    
+    $uri = "$SIObaseurl/api/instances/Sdc::$Sdcid/action/queryOscillatingNetworkCounters"
+    try
+        {
+        Invoke-RestMethod -Uri $uri -Headers $ScaleIOAuthHeaders -Method $Method
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
+  
+    }
+    end {}
+}
 
