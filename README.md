@@ -4,7 +4,9 @@ Powershell Toolkit for EMC ScaleIO using the Rest  API Gateway
 The SIOrestToolkit utilizes the ScaleIO API 2.0 
 It requires ScaleIO 2.0 Systems installed.
 
-
+### aditional info   
+please visit our slack channel for general discussion on scaleio / rest  
+https://codecommunity.slack.com/messages/scaleio_rest/
 
 ###requirements
 in order to run the commands, you need to unrestrict executionpolicy.
