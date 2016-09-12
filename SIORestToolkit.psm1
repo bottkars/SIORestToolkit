@@ -21,7 +21,8 @@
     if ($trustCert.IsPresent)
         {
         Unblock-SIOCerts
-        }  
+        }
+	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::TLS12
     }
     Process
     {

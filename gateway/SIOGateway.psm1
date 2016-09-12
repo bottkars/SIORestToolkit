@@ -31,6 +31,7 @@ function Connect-SIOGateway
         {
         Unblock-SIOCerts
         }
+	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::TLS12
     }
     Process
     {

@@ -12,7 +12,7 @@
 	    }
 "@
 [System.Net.ServicePointManager]::CertificatePolicy = New-Object -TypeName TrustAllCertsPolicy
-$GatewayIP = "192.168.2.193"
+$GatewayIP = "192.168.2.153"
 $GatewayPort = 443
 $SIOBaseUrl = "https://$($GatewayIP):$GatewayPort" # :$GatewayPort"
 $password = ConvertTo-SecureString “Password123!” -AsPlainText -Force
@@ -23,6 +23,7 @@ $auth = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('
         'Content-Type' = "application/json"}
 
 
+	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::TLS12
 
 (Invoke-RestMethod -Uri "$SIOBaseUrl/api/types/Volume/instances" -Headers $global:ScaleIOAuthHeaders -Method Get)
 (Invoke-RestMethod -Uri "$SIOBaseUrl/api/types/User/instances" -Headers $global:ScaleIOAuthHeaders -Method Get)

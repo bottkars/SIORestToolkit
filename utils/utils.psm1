@@ -12,4 +12,5 @@
 	    }
 "@
 [System.Net.ServicePointManager]::CertificatePolicy = New-Object -TypeName TrustAllCertsPolicy
+
 }
