@@ -38,3 +38,7 @@ $Instances
 Invoke-RestMethod -Uri "$SIOBaseUrl/api/instances/Volume::d26ee11500000000/action/revertSnapshot?ID=d26ee11600000001?revertMode=copy" -Headers $global:ScaleIOAuthHeaders -Method POST
 
 (Invoke-RestMethod -Uri "$SIOBaseUrl/api/*" -Headers $global:ScaleIOAuthHeaders -Method Get)
+
+
+
+Invoke-RestMethod -Uri $uri -Method Post -InFile $filePath -ContentType "multipart/form-data"

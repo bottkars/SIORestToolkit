@@ -302,7 +302,7 @@ function Add-SIOTrustedHostCertificate
     }
     Process
     {
-    Content = Get-Content  -Path $infile | Out-String
+    <#Content = Get-Content  -Path $infile | Out-String
     $JSonBody = [ordered]@{ filename = (split-path -Leaf  $infile )
     
     } | ConvertTo-Json 
@@ -312,10 +312,11 @@ function Add-SIOTrustedHostCertificate
             $JSonBody"
             }
             #>
-
+	#>
     try
         {
-        Invoke-RestMethod -Uri "$SIObaseurl/api/trustHostCertificate/$($Type)" -Headers $ScaleIOGatewayAuthHeaders -Method Post -Body $JSonBody -ContentType 'multipart/form-data' -InFile $infile
+		#Invoke-RestMethod -Uri $uri -Method Post -InFile $filePath -ContentType "multipart/form-data"
+        Invoke-RestMethod -Uri "$SIObaseurl/api/trustHostCertificate/$($Type)" -Headers $ScaleIOGatewayAuthHeaders -Method Post -ContentType 'multipart/form-data' -InFile $infile
         }
     catch
         {
