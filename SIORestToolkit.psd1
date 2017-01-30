@@ -31,7 +31,7 @@ Description = 'Powershell Module vor EMC² ScaleIO 2.0 Rest API'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '3.0'
-Tags = 'ScaleIO','Rest','API','EMC','DELL'
+
 
 # Name of the Windows PowerShell host required by this module
 # PowerShellHostName = ''
