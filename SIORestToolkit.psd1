@@ -12,7 +12,7 @@
 RootModule = 'SIORestToolkit.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.0.1.1'
+ModuleVersion = '2.0.1.2'
 
 # ID used to uniquely identify this module
 GUID = 'd3449f6d-c1e3-4873-87a3-2541628cc5bc'
@@ -31,6 +31,7 @@ Description = 'Powershell Module vor EMC² ScaleIO 2.0 Rest API'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '3.0'
+Tags = 'ScaleIO','Rest','API','EMC','DELL'
 
 # Name of the Windows PowerShell host required by this module
 # PowerShellHostName = ''
