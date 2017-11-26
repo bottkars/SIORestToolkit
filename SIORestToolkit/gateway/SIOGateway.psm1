@@ -302,17 +302,14 @@ function Add-SIOTrustedHostCertificate
     }
     Process
     {
-    <#Content = Get-Content  -Path $infile | Out-String
-    $JSonBody = [ordered]@{ filename = (split-path -Leaf  $infile )
-    
-    } | ConvertTo-Json 
+    $Content = [IO.file]::ReadAllText($infile)
+    $JSonBody = [ordered]@{ file = $Content } | ConvertTo-Json 
          if ($PSCmdlet.MyInvocation.BoundParameters["verbose"].IsPresent)
             {
             Write-Host -ForegroundColor Yellow "Calling $uri with Method $method and body:
             $JSonBody"
             }
-            #>
-	#>
+
     try
         {
 		#Invoke-RestMethod -Uri $uri -Method Post -InFile $filePath -ContentType "multipart/form-data"
