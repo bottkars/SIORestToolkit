@@ -331,7 +331,7 @@ function Add-SIOTrustedHostCertificate
 
 #/api/gatewaySetSecureCommunication
 
-function Set-SIOGatewaySecureCommunbication
+function Set-SIOGatewaySecureCommunication
 {
     [CmdletBinding()]
     Param
