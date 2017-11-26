@@ -22,24 +22,9 @@ The Module sudirectories are based on the role of functions , eg types, actions,
 
 use this Automatic downloader to install SIORestToolKit:
 ```Powershell
-$Uri="https://gist.githubusercontent.com/bottkars/b3f4556abbaf1f5f3b402ab6b87c9d77/raw/Install-SIORestToolkit.ps1"
-$DownloadLocation = "$Env:USERPROFILE\Downloads"
-$File = Split-Path -Leaf $Uri
-$OutFile = Join-Path $DownloadLocation $File
-Invoke-WebRequest -Uri $Uri -OutFile $OutFile
-Unblock-File -Path $Outfile
-Set-Location $DownloadLocation
-.\install-SIORestToolkit.ps1 -Installpath [replacewithyourdestination]
+Install-Module SIORestToolkit -Scope CurrentUser -force
 ```
-## alternative installation  
-if not using the Downloader, i Recommend cloning into the modules using and do regular pulls for update rather tan downloading the zip. this also eliminates the need for unblocking the zip archive !!! )
 
-consider https://desktop.github.com/ for windows
-
-import the modules
-```powershell
-import-module \path-to-moduledir\SIORestToolkit.psd1
-```
 To start with the Modules, connect to a ScaleIO Gateway with
 ```Powershell
 Connect-SIOGateway -GatewayIP 192.168.2.193 -user admin -password Password123!
