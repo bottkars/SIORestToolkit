@@ -12,7 +12,7 @@
 RootModule = 'SIORestToolkit.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.0.1.3'
+ModuleVersion = '2.0.1.454'
 
 # ID used to uniquely identify this module
 GUID = 'd3449f6d-c1e3-4873-87a3-2541628cc5bc'
@@ -21,7 +21,7 @@ GUID = 'd3449f6d-c1e3-4873-87a3-2541628cc5bc'
 Author = 'Karsten Bott'
 
 # Company or vendor of this module
-CompanyName = 'EMC²'
+CompanyName = 'DELL||EMC'
 
 # Copyright statement for this module
 Copyright = '(c) 2016 Karsten Bott. All rights reserved.'

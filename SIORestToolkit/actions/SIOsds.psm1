@@ -132,3 +132,46 @@ networkTestLengthInSecs = "$networkTestLengthInSecs"
     end {}
 }
 
+
+function Set-SIOSDSMaintenanceMode
+{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true,ParameterSetName='1')]
+        [Alias("ID")]
+        [ValidatePattern("[0-9A-F]{16}")]$SDSid,
+        [Parameter(Mandatory=$true,ParameterSetName='1')]
+        [switch]$enabled
+
+    )
+    begin {
+    if ($enabled.IsPresent)    
+        {
+            $action ='enterMaintenanceMode'
+        }
+    else {
+            $action = 'exitMaintenanceMode'
+    }
+    }
+    process 
+    {
+    $JSonBody = @{sdsID = $SDSid} | ConvertTo-Json
+ #   $uri = "$SIObaseurl/api/instances/Sds::$SDSid/action/$action"
+    $uri = "$SIObaseurl/api/instances/System/action/$action"
+    
+    Write-Verbose "Calling $uri with 
+    $JsonBody"
+    try
+        {
+        Invoke-RestMethod -Uri $uri -Headers $ScaleIOAuthHeaders -Method Post -Body $JSonBody -verbose:$($verbose.IsPresent) -ContentType 'application/json'
+        }
+    catch
+        {
+        Get-SIOWebException -ExceptionMessage $_.Exception.Message
+        break
+        }
+    
+    }
+    end {}
+}

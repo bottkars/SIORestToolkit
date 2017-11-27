@@ -302,18 +302,49 @@ function Add-SIOTrustedHostCertificate
     }
     Process
     {
-    $Content = [IO.file]::ReadAllText($infile)
-    $JSonBody = [ordered]@{ file = $Content } | ConvertTo-Json 
+    $LF = "`n"
+    
+    $multipartContent = [System.Net.Http.MultipartFormDataContent]::new()
+    $multipartFile = $infile
+    $FileStream = [System.IO.FileStream]::new($multipartFile, [System.IO.FileMode]::Open)
+    $fileHeader = [System.Net.Http.Headers.ContentDispositionHeaderValue]::new("form-data")
+    $fileHeader.Name = "File"
+    $fileHeader.FileName = 'file.txt'
+    $fileContent = [System.Net.Http.StreamContent]::new($FileStream)
+    $fileContent.Headers.ContentDisposition = $fileHeader
+    $fileContent.Headers.ContentType = [System.Net.Http.Headers.MediaTypeHeaderValue]::Parse("text/plain")
+    $multipartContent.Add($fileContent) 
+
+
+<#
+    $ContentType = "text/plain"     #[System.Web.MimeMapping]::GetMimeMapping($infile) 
+    $filename = Split-Path -leaf $infile
+    $boundary = [guid]::NewGuid().ToString()
+    $Content = [IO.file]::ReadAllBytes($infile)
+    $enc=[System.Text.Encoding]::GetEncoding('iso-8859-1')
+    
+
+
+$Template = @'
+--{0}
+Content-Disposition: form-data; name="fileData"; filename="{1}"
+Content-Type: {2}
+
+file="{3}"
+--{0}--
+
+'@    
+    $JSonBody = $Template -f $boundary, $Filename, $ContentType, $enc.getString($Content)#>
          if ($PSCmdlet.MyInvocation.BoundParameters["verbose"].IsPresent)
             {
             Write-Host -ForegroundColor Yellow "Calling $uri with Method $method and body:
-            $JSonBody"
+            $multipartcontent"
             }
 
     try
         {
 		#Invoke-RestMethod -Uri $uri -Method Post -InFile $filePath -ContentType "multipart/form-data"
-        Invoke-RestMethod -Uri "$SIObaseurl/api/trustHostCertificate/$($Type)" -Headers $ScaleIOGatewayAuthHeaders -Method Post -ContentType 'multipart/form-data' -InFile $infile
+        Invoke-RestMethod -Uri "$SIObaseurl/api/trustHostCertificate/$($Type)" -Headers $ScaleIOGatewayAuthHeaders -Body $multipartContent  -Method Post # -ContentType "multipart/form-data; boundary=$Boundary"
         }
     catch
         {
