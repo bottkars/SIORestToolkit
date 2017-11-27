@@ -142,7 +142,9 @@ function Set-SIOSDSMaintenanceMode
         [Alias("ID")]
         [ValidatePattern("[0-9A-F]{16}")]$SDSid,
         [Parameter(Mandatory=$true,ParameterSetName='1')]
-        [switch]$enabled
+        [switch]$enabled,
+        [switch]$forceInsufficientSpace,
+        [switch]$forceDegradedOrFailed
 
     )
     begin {
@@ -156,15 +158,27 @@ function Set-SIOSDSMaintenanceMode
     }
     process 
     {
-    $JSonBody = @{sdsID = $SDSid} | ConvertTo-Json
+    if ($enabled.IsPresent)
+        {
+        $JSonBody = [ordered]@{sdsId = $SDSid
+            forceInsufficientSpace = $($forceInsufficientSpace.IsPresent).ToString().ToUpper()
+            forceDegradedOrFailed = $($forceDegradedOrFailed.IsPresent).ToString().ToUpper()
+        } | ConvertTo-Json
+        } 
+    else{
+        $JSonBody = [ordered]@{sdsId = $SDSid
+        } | ConvertTo-Json
+    }       
+
  #   $uri = "$SIObaseurl/api/instances/Sds::$SDSid/action/$action"
     $uri = "$SIObaseurl/api/instances/System/action/$action"
+    #/api/instances/System/action/enterMaintenanceMode
     
     Write-Verbose "Calling $uri with 
     $JsonBody"
     try
         {
-        Invoke-RestMethod -Uri $uri -Headers $ScaleIOAuthHeaders -Method Post -Body $JSonBody -verbose:$($verbose.IsPresent) -ContentType 'application/json'
+        Invoke-RestMethod -Uri $uri -Headers $ScaleIOAuthHeaders -Method Post -Body $JSonBody -ContentType 'application/json'
         }
     catch
         {
