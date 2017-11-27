@@ -12,7 +12,7 @@
 RootModule = 'SIORestToolkit.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.0.1.454'
+ModuleVersion = '2.0.1.4000'
 
 # ID used to uniquely identify this module
 GUID = 'd3449f6d-c1e3-4873-87a3-2541628cc5bc'
